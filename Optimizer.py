@@ -13,7 +13,7 @@ import streamlit as st
 from PIL import Image
 #import yfinance as yf
 import time
-import fix_yahoo_finance as fyf
+#import fix_yahoo_finance as fyf
 from pandas_datareader import data as pdr
 
 #fyf.pdr_override()
