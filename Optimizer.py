@@ -34,7 +34,7 @@ with header:
     
     #col11, col12 = st.columns(2)
     
-    image = Image.open('arrow.png')
+    image = Image.open('arrow.png', caption="Advance")
     
     #st.image(image, caption='Sunrise by the mountains')
     #col11.image(image, width=100,)
