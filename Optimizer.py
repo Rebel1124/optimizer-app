@@ -34,7 +34,7 @@ with header:
     
     #col11, col12 = st.columns(2)
     
-    image = Image.open('arrow.png', caption="Advance")
+    image = Image.open('arrow.png')
     
     #st.image(image, caption='Sunrise by the mountains')
     #col11.image(image, width=100,)
@@ -43,7 +43,7 @@ with header:
     
     
     colb, colc = st.columns([1, 4.5])
-    colb.image(image, use_column_width=True)
+    colb.image(image, caption='Advance', use_column_width=True)
     
     colc.markdown("<h1 style='text-align: left; color: Purple; padding-left: 0px; font-size: 60px'>ARROW-UP CAPITAL</h1>", unsafe_allow_html=True)
     
