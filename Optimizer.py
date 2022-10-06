@@ -63,6 +63,8 @@ with header:
     
     selected_stocks = st.multiselect('Please choose your stocks', stock_list, default=['AAPL', 'MSFT', 'UNH'])
     
+    selected_stocks = sorted(selected_stocks)
+    
     col1, col2, col3 = st.columns(3)
     
     #theme1 = col4.selectbox('Theme', ["ggplot2", "seaborn", "simple_white"],index=1)
@@ -72,13 +74,7 @@ with header:
     date2 = col2.date_input('End Date', date(2022,9,30)).strftime("%Y/%m/%d")
     
     
-@st.cache(allow_output_mutation=True)
-def get_data(stocks, start, end):
-    #dataframe = data.DataReader(stocks, 'yahoo', start=start, end=end)
-    #dataframe = dataframe['Adj Close']
-    dataframe = pdr.get_data_yahoo(stocks, start=start, end=end)
-    dataframe = dataframe['Adj Close']
-    return dataframe
+
 
 # ## User Input
 
@@ -88,6 +84,7 @@ stocks = selected_stocks
 
 stocks = sorted(stocks)
 
+st.write(stocks)
 
 benchmark = ['^DJI']
 
@@ -111,6 +108,18 @@ number_opt_porfolios=10000
 rf = 0.01 # risk factor
 
 init_investment = 10000
+
+
+
+@st.cache(allow_output_mutation=True)
+def get_data(stocks, start, end):
+    #dataframe = data.DataReader(stocks, 'yahoo', start=start, end=end)
+    #dataframe = dataframe['Adj Close']
+    dataframe = pdr.get_data_yahoo(stocks, start=start, end=end)
+    dataframe = dataframe['Adj Close']
+    return dataframe
+
+    
 
 @st.cache(allow_output_mutation=True)
 def s_returns(stocks, df):
@@ -421,20 +430,22 @@ risk_return.columns = ['Returns', 'Volatility']
 # Setup lists to hold portfolio weights, returns and volatility
 
 @st.cache(allow_output_mutation=True)
-def efficient(selected_stocks, annual_returns, cov_matrix):
+def efficient(stocks, annual_returns, cov_matrix):
+
+    np.random.seed(seed)
 
     p_ret = [] # Define an empty array for portfolio returns
     p_vol = [] # Define an empty array for portfolio volatility
     p_weights = [] # Define an empty array for asset weights
 
-    num_assets = len(selected_stocks)
+    num_assets = len(stocks)
     num_portfolios = 10000
 
 
     # Calculate Portfolio weights for num_portfolios
 
     for portfolio in range(num_portfolios):
-        weights = np.random.random(num_assets)
+        weights = np.random.rand(num_assets)
         weights = weights/np.sum(weights)
         p_weights.append(weights)
         returns = np.dot(weights, annual_returns) # Returns are the product of individual expected returns of asset and its 
@@ -447,12 +458,12 @@ def efficient(selected_stocks, annual_returns, cov_matrix):
 
     return p_ret, p_vol, p_weights
 
-p_ret, p_vol, p_weights = efficient(selected_stocks, annual_returns, cov_matrix)
+p_ret, p_vol, p_weights = efficient(stocks, annual_returns, cov_matrix)
 
 # Insert the stock weights that correspon to the respective portfolio return and volatility
 
 @st.cache(allow_output_mutation=True)
-def portfolios1(p_ret, p_vol, p_weights):
+def portfolios1(df, p_ret, p_vol, p_weights):
 
     data = {'Returns':p_ret, 'Volatility':p_vol}
 
@@ -467,7 +478,7 @@ def portfolios1(p_ret, p_vol, p_weights):
     
     return portfolios
 
-portfolios = portfolios1(p_ret, p_vol, p_weights)
+portfolios = portfolios1(df, p_ret, p_vol, p_weights)
 
 # Finding the optimal portfolio
 
@@ -479,7 +490,7 @@ bm_sharpe = (bm_annual_returns-rf)/bm_annual_std_dev
 @st.cache(allow_output_mutation=True)
 def pie(optimal_risky_port):
 
-    opt_port_df = pd.DataFrame(data={'Stocks': selected_stocks, 'Weight': optimal_risky_port[2:-1].values})
+    opt_port_df = pd.DataFrame(data={'Stocks': stocks, 'Weight': optimal_risky_port[2:-1].values})
     fig4 = px.pie(opt_port_df, values='Weight', names='Stocks',
                 #title='Optimal Portfolio Stock Weighting',
                 template=theme
@@ -789,7 +800,7 @@ risk_return.columns = ['Returns', 'Volatility']
 #
 ########################################################################################################################
 
-p_ret, p_vol, p_weights = efficient(selected_stocks, annual_returns, cov_matrix)
+p_ret, p_vol, p_weights = efficient(stocks, annual_returns, cov_matrix)
 # Insert the stock weights that correspon to the respective portfolio return and volatility
 #########################################################################################################################
 #data = {'Returns':p_ret, 'Volatility':p_vol}
@@ -804,7 +815,7 @@ p_ret, p_vol, p_weights = efficient(selected_stocks, annual_returns, cov_matrix)
 #portfolios['Sharpe'] = (portfolios['Returns']-rf)/portfolios['Volatility']
 #######################################################################################################################
 
-portfolios = portfolios1(p_ret, p_vol, p_weights)
+portfolios = portfolios1(df, p_ret, p_vol, p_weights)
 
 #portfolios = portfolios(p_ret, p_vol, p_weights)
 
