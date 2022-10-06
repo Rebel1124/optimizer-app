@@ -85,6 +85,10 @@ def get_data(stocks, start, end):
 # Yahoo finance API data input
 #stocks = ['DIS', 'JNJ', 'HD', 'KO', 'NKE']
 stocks = selected_stocks
+
+stocks = sorted(stocks)
+
+
 benchmark = ['^DJI']
 
 start_date = date1
