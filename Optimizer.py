@@ -84,8 +84,6 @@ stocks = selected_stocks
 
 stocks = sorted(stocks)
 
-st.write(stocks)
-
 benchmark = ['^DJI']
 
 start_date = date1
@@ -463,11 +461,11 @@ p_ret, p_vol, p_weights = efficient(stocks, annual_returns, cov_matrix)
 # Insert the stock weights that correspon to the respective portfolio return and volatility
 
 @st.cache(allow_output_mutation=True)
-def portfolios1(df, p_ret, p_vol, p_weights):
+def portfolios1(stocks, p_ret, p_vol, p_weights):
 
     data = {'Returns':p_ret, 'Volatility':p_vol}
 
-    for counter, symbol in enumerate(df.columns.tolist()):
+    for counter, symbol in enumerate(stocks):
         data[symbol+' weight'] = [w[counter] for w in p_weights]
 
     # Create portfolios dataframe to hold the portfolio weights of stocks, and portfolio return, volatility and sharpe ratio
@@ -478,7 +476,7 @@ def portfolios1(df, p_ret, p_vol, p_weights):
     
     return portfolios
 
-portfolios = portfolios1(df, p_ret, p_vol, p_weights)
+portfolios = portfolios1(stocks, p_ret, p_vol, p_weights)
 
 # Finding the optimal portfolio
 
@@ -815,7 +813,7 @@ p_ret, p_vol, p_weights = efficient(stocks, annual_returns, cov_matrix)
 #portfolios['Sharpe'] = (portfolios['Returns']-rf)/portfolios['Volatility']
 #######################################################################################################################
 
-portfolios = portfolios1(df, p_ret, p_vol, p_weights)
+portfolios = portfolios1(stocks, p_ret, p_vol, p_weights)
 
 #portfolios = portfolios(p_ret, p_vol, p_weights)
 
